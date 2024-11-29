@@ -8,7 +8,16 @@
     <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
     <style>
         body { margin: 0; overflow: hidden; }
-        #arjs-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        #debugInfo { 
+            position: fixed; 
+            top: 10px; 
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            z-index: 1000;
+            display: block;
+        }
         #spotInfo { 
             position: fixed; 
             bottom: 20px; 
@@ -25,63 +34,75 @@
     </style>
 </head>
 <body>
+    <div id="debugInfo">等待AR初始化...</div>
     <div id="spotInfo"></div>
     
-    <a-scene embedded arjs="trackingMethod: best; debugUIEnabled: false;">
-        <!-- 景點0 -->
-        <a-marker preset="custom" type="pattern" url="pattern-map.patt">
-            <a-image src="img_test.png" position="0 0 0" rotation="-90 0 0" scale="1 1 1"></a-image>
-        </a-marker>        
-        
+    <a-scene 
+        embedded 
+        arjs="trackingMethod: best; debugUIEnabled: true;"
+        renderer="logarithmicDepthBuffer: true"
+        vr-mode-ui="enabled: false"
+        gesture-detector
+    >
         <!-- 景點1 -->
-        <a-marker preset="custom" type="pattern" url="markers/spot1.patt">
-            <a-image src="images/spot1_intro.jpg" position="0 0 0" rotation="-90 0 0" scale="1 1 1"></a-image>
+        <a-marker 
+            type="pattern" 
+            preset="custom" 
+            url="markers/spot1.patt" 
+            emitevents="true"
+        >
+            <a-image 
+                src="images/spot1_intro.jpg" 
+                position="0 0 0" 
+                rotation="-90 0 0" 
+                scale="1 1 1"
+                visible="true"
+            ></a-image>
         </a-marker>
-
-        <!-- 景點2 -->
-        <a-marker preset="custom" type="pattern" url="markers/spot2.patt">
-            <a-image src="images/spot2_intro.jpg" position="0 0 0" rotation="-90 0 0" scale="1 1 1"></a-image>
-        </a-marker>
-
-        <!-- 景點3 -->
-        <a-marker preset="custom" type="pattern" url="markers/spot3.patt">
-            <a-image src="images/spot3_intro.jpg" position="0 0 0" rotation="-90 0 0" scale="1 1 1"></a-image>
-        </a-marker>
-
-        <!-- 其餘7個景點標記 -->
-        <!-- ... -->
 
         <a-entity camera></a-entity>
     </a-scene>
 
     <script>
+        // 偵錯資訊顯示
+        function updateDebugInfo(message) {
+            const debugInfoElement = document.getElementById('debugInfo');
+            debugInfoElement.textContent = message;
+        }
+
         // 景點資訊對應表
         const spotInfoMap = {
-            'spot1': '這是第一個景點的詳細介紹，敘述景點的歷史、特色等。',
-            'spot2': '這是第二個景點的詳細介紹，包含景點的背景故事。',
-            'spot3': '這是第三個景點的詳細介紹，說明景點的文化意義。',
-            // 其餘景點
+            'spot1': '這是第一個景點的詳細介紹，敘述景點的歷史、特色等。'
         };
 
         // AR標記偵測事件
-        document.querySelectorAll('a-marker').forEach(marker => {
-            marker.addEventListener('markerFound', function(event) {
-                const spotId = this.getAttribute('url').replace('markers/', '').replace('.patt', '');
-                const spotInfoElement = document.getElementById('spotInfo');
-                
-                spotInfoElement.textContent = spotInfoMap[spotId];
-                spotInfoElement.style.display = 'block';
+        const marker = document.querySelector('a-marker');
+        
+        marker.addEventListener('markerFound', function(event) {
+            updateDebugInfo('找到標記！');
+            console.log('Marker Found:', event);
+            
+            const spotInfoElement = document.getElementById('spotInfo');
+            spotInfoElement.textContent = spotInfoMap['spot1'];
+            spotInfoElement.style.display = 'block';
 
-                // 3秒後自動隱藏
-                setTimeout(() => {
-                    spotInfoElement.style.display = 'none';
-                }, 3000);
-            });
-
-            marker.addEventListener('markerLost', function(event) {
-                const spotInfoElement = document.getElementById('spotInfo');
+            setTimeout(() => {
                 spotInfoElement.style.display = 'none';
-            });
+            }, 3000);
+        });
+
+        marker.addEventListener('markerLost', function(event) {
+            updateDebugInfo('失去標記');
+            console.log('Marker Lost:', event);
+            
+            const spotInfoElement = document.getElementById('spotInfo');
+            spotInfoElement.style.display = 'none';
+        });
+
+        // 監聽場景載入事件
+        const scene = document.querySelector('a-scene');
+        scene.addEventListener('loaded', function () {
+            updateDebugInfo('AR場景已載入');
         });
     </script>
 </body>
