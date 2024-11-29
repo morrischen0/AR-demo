@@ -1,51 +1,88 @@
-<!doctype html>
-<html>
-    <head>
-        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-        <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
-    </head>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>景點AR介紹</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #arjs-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        #spotInfo { 
+            position: fixed; 
+            bottom: 20px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            display: none;
+            max-width: 80%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="spotInfo"></div>
+    
+    <a-scene embedded arjs="trackingMethod: best; debugUIEnabled: false;">
+        <!-- 景點0 -->
+        <a-marker preset="custom" type="pattern" url="pattern-map.patt">
+            <a-image src="img_test.png" position="0 0 0" rotation="-90 0 0" scale="1 1 1"></a-image>
+        </a-marker>        
+        
+        <!-- 景點1 -->
+        <a-marker preset="custom" type="pattern" url="markers/spot1.patt">
+            <a-image src="images/spot1_intro.jpg" position="0 0 0" rotation="-90 0 0" scale="1 1 1"></a-image>
+        </a-marker>
 
-    <body style="margin: 0; overflow: hidden;">
-        <a-scene
-            vr-mode-ui="enabled: false;"
-            loading-screen="enabled: false;"
-            renderer="logarithmicDepthBuffer: true;"
-            arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-            id="scene"
-            embedded
-            gesture-detector
-        >
-            <a-assets>
-                <a-asset-item
-                    id="animated-asset"
-                    src="assets/asset.glb"
-                ></a-asset-item>
-            </a-assets>
+        <!-- 景點2 -->
+        <a-marker preset="custom" type="pattern" url="markers/spot2.patt">
+            <a-image src="images/spot2_intro.jpg" position="0 0 0" rotation="-90 0 0" scale="1 1 1"></a-image>
+        </a-marker>
 
-            <a-marker
-                id="animated-marker"
-                type="pattern"
-                preset="custom"
-                url="assets/marker.patt"
-                raycaster="objects: .clickable"
-                emitevents="true"
-                cursor="fuse: false; rayOrigin: mouse;"
-                id="markerA"
-            >
-                <a-entity
-                    id="bowser-model"
-                    scale="0.567883211019981 0.567883211019981 0.567883211019981"
-                    animation-mixer="loop: repeat"
-                    gltf-model="#animated-asset"
-                    class="clickable"
-                    gesture-handler
-                ></a-entity>
-            </a-marker>
+        <!-- 景點3 -->
+        <a-marker preset="custom" type="pattern" url="markers/spot3.patt">
+            <a-image src="images/spot3_intro.jpg" position="0 0 0" rotation="-90 0 0" scale="1 1 1"></a-image>
+        </a-marker>
 
-            <a-entity camera></a-entity>
-        </a-scene>
-    </body>
+        <!-- 其餘7個景點標記 -->
+        <!-- ... -->
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        // 景點資訊對應表
+        const spotInfoMap = {
+            'spot1': '這是第一個景點的詳細介紹，敘述景點的歷史、特色等。',
+            'spot2': '這是第二個景點的詳細介紹，包含景點的背景故事。',
+            'spot3': '這是第三個景點的詳細介紹，說明景點的文化意義。',
+            // 其餘景點
+        };
+
+        // AR標記偵測事件
+        document.querySelectorAll('a-marker').forEach(marker => {
+            marker.addEventListener('markerFound', function(event) {
+                const spotId = this.getAttribute('url').replace('markers/', '').replace('.patt', '');
+                const spotInfoElement = document.getElementById('spotInfo');
+                
+                spotInfoElement.textContent = spotInfoMap[spotId];
+                spotInfoElement.style.display = 'block';
+
+                // 3秒後自動隱藏
+                setTimeout(() => {
+                    spotInfoElement.style.display = 'none';
+                }, 3000);
+            });
+
+            marker.addEventListener('markerLost', function(event) {
+                const spotInfoElement = document.getElementById('spotInfo');
+                spotInfoElement.style.display = 'none';
+            });
+        });
+    </script>
+</body>
 </html>
