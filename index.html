@@ -1,178 +1,25 @@
-<!DOCTYPE html>
 <html>
-<head>
+  <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <style>
-        #instructions {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            color: white;
-            background: rgba(0,0,0,0.5);
-            padding: 10px;
-            z-index: 10;
-        }
-    </style>
-</head>
-<body>
-    <div id="instructions">
-        偵測到模型後：<br>
-        • 單指拖曳：移動模型<br>
-        • 雙指縮放：調整大小<br>
-        • 雙指旋轉：改變方向
-    </div>
+  </head>
+  <body>
+    <a-scene mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/band-example/band.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      <a-assets>
+        <a-asset-item id="bearModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/band-example/bear/scene.gltf"></a-asset-item>
+        <a-asset-item id="raccoonModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/band-example/raccoon/scene.gltf"></a-asset-item>
+      </a-assets>
 
-    <a-scene 
-        mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/band-example/band.mind;" 
-        color-space="sRGB" 
-        renderer="colorManagement: true, physicallyCorrectLights" 
-        vr-mode-ui="enabled: false" 
-        device-orientation-permission-ui="enabled: false"
-    >
-        <a-assets>
-            <a-asset-item id="raccoonModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/band-example/raccoon/scene.gltf"></a-asset-item>
-        </a-assets>
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-        <a-entity mindar-image-target="targetIndex: 0">
-            <a-gltf-model 
-                id="interactive-model"
-                rotation="0 0 0" 
-                position="0 -0.25 0" 
-                scale="0.05 0.05 0.05" 
-                src="#raccoonModel" 
-                animation-mixer
-                gesture-handler
-            >
-            </a-gltf-model>
-        </a-entity>
-
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.05 0.05 0.05" src="#raccoonModel" animation-mixer>
+      </a-entity>
+      <a-entity mindar-image-target="targetIndex: 1">
+        <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.05 0.05 0.05" src="#bearModel" animation-mixer>
+      </a-entity>
     </a-scene>
-
-    <script>
-        // 手勢控制腳本
-        AFRAME.registerComponent('gesture-handler', {
-            schema: {
-                enabled: { default: true }
-            },
-            init: function () {
-                this.targetEntity = this.el;
-                
-                // 追蹤多點觸控狀態
-                this.touchState = {
-                    touches: [],
-                    initialDistance: 0,
-                    initialScale: 1,
-                    initialRotation: 0
-                };
-
-                // 綁定觸控事件
-                this.el.addEventListener('touchstart', this.onTouchStart.bind(this));
-                this.el.addEventListener('touchmove', this.onTouchMove.bind(this));
-                this.el.addEventListener('touchend', this.onTouchEnd.bind(this));
-            },
-
-            onTouchStart: function (evt) {
-                this.touchState.touches = Array.from(evt.touches);
-                
-                // 記錄初始位置
-                if (this.touchState.touches.length === 1) {
-                    this.initialX = this.touchState.touches[0].clientX;
-                    this.initialY = this.touchState.touches[0].clientY;
-                }
-                
-                // 雙指縮放初始設定
-                if (this.touchState.touches.length === 2) {
-                    const touch1 = this.touchState.touches[0];
-                    const touch2 = this.touchState.touches[1];
-                    
-                    // 計算初始距離
-                    this.touchState.initialDistance = this.getDistance(touch1, touch2);
-                    
-                    // 記錄初始縮放
-                    const scale = this.targetEntity.getAttribute('scale');
-                    this.touchState.initialScale = scale.x;
-                    
-                    // 計算初始旋轉角度
-                    this.touchState.initialRotation = this.getRotation(touch1, touch2);
-                }
-            },
-
-            onTouchMove: function (evt) {
-                const touches = Array.from(evt.touches);
-                
-                // 單指移動
-                if (touches.length === 1) {
-                    const deltaX = touches[0].clientX - this.initialX;
-                    const deltaY = touches[0].clientY - this.initialY;
-                    
-                    // 移動模型
-                    const currentPos = this.targetEntity.getAttribute('position');
-                    this.targetEntity.setAttribute('position', {
-                        x: currentPos.x + deltaX * 0.001,
-                        y: currentPos.y - deltaY * 0.001,
-                        z: currentPos.z
-                    });
-                    
-                    // 更新初始位置
-                    this.initialX = touches[0].clientX;
-                    this.initialY = touches[0].clientY;
-                }
-                
-                // 雙指縮放與旋轉
-                if (touches.length === 2) {
-                    const touch1 = touches[0];
-                    const touch2 = touches[1];
-                    
-                    // 縮放計算
-                    const currentDistance = this.getDistance(touch1, touch2);
-                    const scaleFactor = currentDistance / this.touchState.initialDistance;
-                    
-                    const currentScale = this.touchState.initialScale * scaleFactor;
-                    this.targetEntity.setAttribute('scale', {
-                        x: currentScale,
-                        y: currentScale,
-                        z: currentScale
-                    });
-                    
-                    // 旋轉計算
-                    const currentRotation = this.getRotation(touch1, touch2);
-                    const rotationDelta = currentRotation - this.touchState.initialRotation;
-                    
-                    const currentRot = this.targetEntity.getAttribute('rotation');
-                    this.targetEntity.setAttribute('rotation', {
-                        x: currentRot.x,
-                        y: currentRot.y + rotationDelta,
-                        z: currentRot.z
-                    });
-                }
-            },
-
-            onTouchEnd: function () {
-                this.touchState.touches = [];
-            },
-
-            // 計算兩點間距離
-            getDistance: function (touch1, touch2) {
-                return Math.sqrt(
-                    Math.pow(touch1.clientX - touch2.clientX, 2) +
-                    Math.pow(touch1.clientY - touch2.clientY, 2)
-                );
-            },
-
-            // 計算兩點間角度
-            getRotation: function (touch1, touch2) {
-                return Math.atan2(
-                    touch2.clientY - touch1.clientY,
-                    touch2.clientX - touch1.clientX
-                ) * 180 / Math.PI;
-            }
-        });
-    </script>
-</body>
+  </body>
 </html>
