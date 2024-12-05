@@ -6,20 +6,58 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   </head>
   <body>
-    <a-scene mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/band-example/band.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: https://github.com/morrischen0/AR-demo/blob/main/test_targ.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       <a-assets>
+        <!-- 模型預載入 -->
         <a-asset-item id="bearModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/band-example/bear/scene.gltf"></a-asset-item>
         <a-asset-item id="raccoonModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/band-example/raccoon/scene.gltf"></a-asset-item>
+        <a-asset-item id="tes1_Model" src="https://github.com/morrischen0/AR-demo/blob/main/img_file/1.jpg"></a-asset-item>
+        <a-asset-item id="tes2_Model" src="https://github.com/morrischen0/AR-demo/blob/main/img_file/2.jpg"></a-asset-item>
+        <a-asset-item id="tes3_Model" src="https://github.com/morrischen0/AR-demo/blob/main/img_file/3.jpg"></a-asset-item>
+        <a-asset-item id="tes4_Model" src="https://github.com/morrischen0/AR-demo/blob/main/img_file/4.jpg"></a-asset-item>
+        <a-asset-item id="tes5_Model" src="https://github.com/morrischen0/AR-demo/blob/main/img_file/5.jpg"></a-asset-item>
+        <a-asset-item id="tes6_Model" src="https://github.com/morrischen0/AR-demo/blob/main/img_file/6.jpg"></a-asset-item>
+        <a-asset-item id="tes7_Model" src="https://github.com/morrischen0/AR-demo/blob/main/img_file/7.jpg"></a-asset-item>
+        <a-asset-item id="tes8_Model" src="https://github.com/morrischen0/AR-demo/blob/main/img_file/8.jpg"></a-asset-item>
       </a-assets>
+    <!-- 測試用途 <a-scene mindar-image="imageTargetSrc: https://github.com/morrischen0/AR-demo/blob/main/targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      <a-assets>
+        <a-asset-item id="tes1_Model" src="https://github.com/morrischen0/AR-demo/blob/main/img_test.png"></a-asset-item>
+      </a-assets> -->
 
+      <!-- 鏡頭控制 -->
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
+      <!-- 目標偵測 -->
       <a-entity mindar-image-target="targetIndex: 0">
         <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.05 0.05 0.05" src="#raccoonModel" animation-mixer>
       </a-entity>
       <a-entity mindar-image-target="targetIndex: 1">
         <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.05 0.05 0.05" src="#bearModel" animation-mixer>
       </a-entity>
+      <a-entity mindar-image-target="targetIndex: 3">
+        <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.05 0.05 0.05" src="#tes1_Model" animation-mixer>
+      </a-entity>
+      <a-entity mindar-image-target="targetIndex: 4">
+        <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.05 0.05 0.05" src="#tes2_Model" animation-mixer>
+      </a-entity>
+      <a-entity mindar-image-target="targetIndex: 5">
+        <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.05 0.05 0.05" src="#tes3_Model" animation-mixer>
+      </a-entity>
+      <a-entity mindar-image-target="targetIndex: 6">
+        <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.05 0.05 0.05" src="#tes4_Model" animation-mixer>
+      </a-entity>
+      <a-entity mindar-image-target="targetIndex: 7">
+        <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.05 0.05 0.05" src="#tes5_Model" animation-mixer>
+      </a-entity>
+      <a-entity mindar-image-target="targetIndex: 8">
+        <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.05 0.05 0.05" src="#tes6_Model" animation-mixer>
+      </a-entity>
+      <a-entity mindar-image-target="targetIndex: 9">
+        <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.05 0.05 0.05" src="#tes7_Model" animation-mixer>
+      </a-entity>
     </a-scene>
+
+    
   </body>
 </html>
